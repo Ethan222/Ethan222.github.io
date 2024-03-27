@@ -9,6 +9,12 @@
             "request": "launch",
             "name": "Open index.html",
             "file": "c:\\Users\\ethan\\OneDrive\\Documents\\Virtual Sabacc Project\\Ethan222.github.io\\index.html"
+        },
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "Open index.html v2",
+            "file": "c:\\Users\\ethan\\Documents\\Ethan222.github.io\\index.html"
         }
     ]
 }
