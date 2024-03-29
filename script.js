@@ -8,8 +8,11 @@ class Card {
     toString() {
         return `${this.val > 0 ? "+" : ""}${this.val} ${this.suit}`;
     }
-    get imageSrc() {
-        return this.toString() + ".png";
+    static getImageSrc(card) {
+        return `assets/cards/${card.toString()}.png`;
+    }
+    static getHTML(card) {
+        return `<img title='${card.toString()}' class='card' src='${this.getImageSrc(card)}'>`;
     }
 }
 class Deck {
@@ -32,6 +35,22 @@ class Deck {
         return this.cards.splice(Math.floor(Math.random() * this.cards.length), 1);
     }
 }
+class Character {
+    name;
+    credits = 20_000;
+    hand = [];
+    constructor(name) {
+        this.name = name;
+    }
+    get html() {
+        let ret = `<h3>${this.name}</h3> <p>Credits: ${this.credits}</p>`;
+        for(let card of this.hand)
+            ret += Card.getHTML(card);
+        return ret;
+    }
+}
 const deck = new Deck();
-let card = deck.draw();
-document.getElementById("playArea").innerHTML = `<img src=${card.imageSrc} title=${card.toString()}>`;
+document.getElementById("discardPile").innerHTML = Card.getHTML(deck.draw());
+const player = new Character("Ethan");
+player.hand.push(deck.draw(), deck.draw());
+document.getElementById("playArea").innerHTML += player.html;

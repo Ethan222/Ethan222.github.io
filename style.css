@@ -1,0 +1,10 @@
+h1 {
+    text-align: center;
+}
+.card {
+    width: 89.5px;
+    height: 121.5px;
+}
+.container > * {
+    display: inline-block;
+}
