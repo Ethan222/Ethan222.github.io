@@ -12,7 +12,7 @@ class Card {
         return `assets/cards/${card.toString()}.png`;
     }
     static getHTML(card) {
-        return `<img title='${card.toString()}' class='card' src='${this.getImageSrc(card)}'>`;
+        return `<img id='${card.toString()}' title='${card.toString()}' class='card' src='${this.getImageSrc(card)}'>`;
     }
 }
 class Deck {
@@ -35,12 +35,26 @@ class Deck {
         return this.cards.splice(Math.floor(Math.random() * this.cards.length), 1);
     }
 }
+class DiscardPile {
+    EMPTY_PILE_HTML = "<img class='card' src='assets/cards/empty-discard-pile.png'>";
+    constructor(deck) {
+        this.cards = [deck.draw()];
+        this.updateHTML();
+    }
+    updateHTML() {
+        document.getElementById("discardPile").innerHTML = this.cards.length > 0 ? Card.getHTML(this.cards[this.cards.length - 1]) : this.EMPTY_PILE_HTML;
+    }
+    getTopCard() {
+        return this.cards.pop();
+    }
+}
 class Character {
-    name;
     credits = 20_000;
-    hand = [];
-    constructor(name) {
+    constructor(name, id) {
         this.name = name;
+        this.id = id;
+        this.hand = [deck.draw(), deck.draw()];
+        this.updateHTML();
     }
     get html() {
         let ret = `<h3>${this.name}</h3> <p>Credits: ${this.credits}</p>`;
@@ -48,9 +62,48 @@ class Character {
             ret += Card.getHTML(card);
         return ret;
     }
+    updateHTML() {
+        document.getElementById(this.id).innerHTML = this.html;
+    }
+    discard(cardToDiscard) {
+        const id = cardToDiscard.id;
+        let index = -1;
+        for(let i = 0; i < this.hand.length; i++) {
+            if(this.hand[i].toString() == id) {
+                index = i;
+                break;
+            }
+        }
+        if(index != -1)
+            return this.hand.splice(index, 1);
+    }
+}
+class Player extends Character {
+    constructor(name) {
+        super(name, "player");
+    }
+    updateHTML() {
+        super.updateHTML();
+        for(const card of this.hand) {
+            document.getElementById(card.toString()).setAttribute("onclick", "discard(this)");
+        }
+    }
 }
 const deck = new Deck();
-document.getElementById("discardPile").innerHTML = Card.getHTML(deck.draw());
-const player = new Character("Ethan");
-player.hand.push(deck.draw(), deck.draw());
-document.getElementById("playArea").innerHTML += player.html;
+const discardPile = new DiscardPile(deck);
+const player = new Player("Ethan", deck);
+
+function drawFromDeck() {
+    player.hand.push(deck.draw());
+    player.updateHTML();
+}
+function drawFromDiscard() {
+    player.hand.push(discardPile.getTopCard());
+    discardPile.updateHTML();
+    player.updateHTML();
+}
+function discard(card) {
+    discardPile.cards.push(player.discard(card));
+    player.updateHTML();
+    discardPile.updateHTML();
+}

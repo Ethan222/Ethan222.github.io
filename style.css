@@ -5,6 +5,6 @@ h1 {
     width: 89.5px;
     height: 121.5px;
 }
-.container > * {
+.piles > * {
     display: inline-block;
 }

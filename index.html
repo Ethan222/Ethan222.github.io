@@ -6,11 +6,13 @@
   </head>
   <body style="background-color: darksalmon;">
     <h1>Sabacc</h1>
+    <p id="instructions"></p>
     <div id="playArea" style="text-align: center;">
-      <div class="container">
-        <img id="deck" class="card" src="assets/cards/Back.png">
-        <div id="discardPile"></div>
+      <div class="piles">
+        <img id="deck" class="card" src="assets/cards/Back.png" onclick="drawFromDeck()">
+        <div id="discardPile" onclick="drawFromDiscard()"></div>
       </div>
+      <div id="player"></div>
     </div>
     <script src="script.js"></script>
   </body>
