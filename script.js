@@ -57,7 +57,7 @@ class Character {
         this.updateHTML();
     }
     get html() {
-        let ret = `<h3>${this.name}</h3> <p>Credits: ${this.credits}</p>`;
+        let ret = `<h4>${this.name}</h4> <p>Credits: ${this.credits}</p>`;
         for(let card of this.hand)
             ret += Card.getHTML(card);
         return ret;
@@ -89,21 +89,58 @@ class Player extends Character {
         }
     }
 }
+const State = {
+    DRAWING: "DRAWING",
+    DISCARDING: "DISCARDING",
+    GAME_OVER: "GAME_OVER"
+}
+
 const deck = new Deck();
 const discardPile = new DiscardPile(deck);
 const player = new Player("Ethan", deck);
+let round = 1;
+let state;
+switchToDrawState();
 
 function drawFromDeck() {
-    player.hand.push(deck.draw());
-    player.updateHTML();
+    if(state === State.DRAWING) {
+        player.hand.push(deck.draw());
+        player.updateHTML();
+        switchToDiscardState();
+    }
 }
 function drawFromDiscard() {
-    player.hand.push(discardPile.getTopCard());
-    discardPile.updateHTML();
-    player.updateHTML();
+    if(state === State.DRAWING) {
+        player.hand.push(discardPile.getTopCard());
+        discardPile.updateHTML();
+        player.updateHTML();
+        switchToDiscardState();
+    }
 }
 function discard(card) {
-    discardPile.cards.push(player.discard(card));
-    player.updateHTML();
-    discardPile.updateHTML();
+    if(state === State.DISCARDING) {
+        discardPile.cards.push(player.discard(card));
+        player.updateHTML();
+        discardPile.updateHTML();
+
+        goToNextRound();
+    }
+}
+function switchToDrawState() {
+    state = State.DRAWING;
+    document.getElementById('instructions').innerText = 'Draw from the deck or discard pile';
+}
+function switchToDiscardState() {
+    state = State.DISCARDING;
+    document.getElementById('instructions').innerText = 'Discard a card';
+}
+function goToNextRound() {
+    round++;
+    if(round <= 3) {
+        document.getElementById("round number").innerText = `Round ${round}/3`;
+        switchToDrawState()
+    } else {
+        document.getElementById('instructions').innerText = 'Game over';
+        state = State.GAME_OVER;
+    }
 }
