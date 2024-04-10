@@ -1,6 +1,4 @@
 class Card {
-    val;
-    suit;
     constructor(val, suit) {
         this.val = val;
         this.suit = suit;
@@ -45,7 +43,7 @@ class DiscardPile {
         document.getElementById("discardPile").innerHTML = this.cards.length > 0 ? Card.getHTML(this.cards[this.cards.length - 1]) : this.EMPTY_PILE_HTML;
     }
     getTopCard() {
-        return this.cards.pop();
+        return this.cards.pop()[0];
     }
 }
 class Character {
@@ -56,10 +54,19 @@ class Character {
         this.hand = [deck.draw(), deck.draw()];
         this.updateHTML();
     }
+    get handTotal() {
+        let sum = 0;
+        for(const card of this.hand) {
+            sum += card[0].val;
+        }
+        console.log('---');
+        return sum;
+    }
     get html() {
         let ret = `<h4>${this.name}</h4> <p>Credits: ${this.credits}</p>`;
         for(let card of this.hand)
             ret += Card.getHTML(card);
+        ret += `Total: ${this.handTotal}`;
         return ret;
     }
     updateHTML() {
@@ -94,13 +101,6 @@ const State = {
     DISCARDING: "DISCARDING",
     GAME_OVER: "GAME_OVER"
 }
-
-const deck = new Deck();
-const discardPile = new DiscardPile(deck);
-const player = new Player("Ethan", deck);
-let round = 1;
-let state;
-switchToDrawState();
 
 function drawFromDeck() {
     if(state === State.DRAWING) {
@@ -144,3 +144,10 @@ function goToNextRound() {
         state = State.GAME_OVER;
     }
 }
+
+const deck = new Deck();
+const discardPile = new DiscardPile(deck);
+const player = new Player("Ethan", deck);
+let round = 1;
+let state;
+switchToDrawState();
